@@ -131,3 +131,4 @@ dmypy.json
 #etc
 game_return_scheme.json
 ProjectM.code-workspace
+querychecker.py
