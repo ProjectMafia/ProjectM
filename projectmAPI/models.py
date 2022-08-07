@@ -25,12 +25,12 @@ class ServiceInfo(models.Model):
         ('em', 'Email'),
         ('et', 'Другое')
     )
-    service_name = models.CharField('Название сервиса', max_length=2, choices=SERVICE_NAMES)
-    service_logo = models.TextField('Ссылка на лого')
-    service_type = models.CharField('Тип сервиса', max_length=2, choices=SERVICE_TYPES)
+    name = models.CharField('Название сервиса', max_length=2, choices=SERVICE_NAMES)
+    logo = models.TextField('Ссылка на лого')
+    type = models.CharField('Тип сервиса', max_length=2, choices=SERVICE_TYPES)
 
     def __str__(self) -> str:
-        return f'{self.service_name}'
+        return f'{self.name}'
     
 
     class Meta:
@@ -39,7 +39,7 @@ class ServiceInfo(models.Model):
 
 
 class UserM(models.Model):
-    "Таблица с пользователями, доделать аунтификацию"
+    "Таблица с пользователями, доделать аунтификацию"""""""
     login = models.OneToOneField(User, on_delete=models.CASCADE, unique=True, default=-1)
     nickname = models.CharField('Ник', max_length=50, unique=True)
     email = models.CharField('Почта', max_length=50, unique=True)
@@ -47,7 +47,7 @@ class UserM(models.Model):
     surname = models.CharField('Фамилия', max_length=30)
     country = models.CharField('Страна', max_length=40)
     city = models.CharField('Город', max_length=40)
-    photo = models.TextField('Ссылка на фото профиля')
+    photo = models.URLField('Ссылка на фото профиля')
     scince_on_site = models.DateTimeField('На сайте с', auto_now=True)
 
     def __str__(self) -> str:
@@ -74,7 +74,8 @@ class UserNicknameHistory(models.Model):
 class UserContact(Contact):
     """Контакты пользователя"""
     uid = models.ForeignKey(UserM, on_delete=models.CASCADE, verbose_name='Пользователь', related_name='user_contact')
-    service_info = models.ForeignKey(ServiceInfo, on_delete=models.CASCADE, verbose_name='Информация о сервисе', related_name='service_user_info')
+    service_info = models.ForeignKey(ServiceInfo, on_delete=models.CASCADE, verbose_name='Информация о сервисе', 
+    related_name='service_user_info')
 
     class Meta:
         verbose_name = 'Контакт игрока'
