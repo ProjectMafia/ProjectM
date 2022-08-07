@@ -20,11 +20,6 @@ class ServiceInfo(models.Model):
         ('em', 'Email'),
         ('ph', 'Телефон'),
     )
-    SERVICE_TYPES = (
-        ('ph', 'Телефон'),
-        ('em', 'Email'),
-        ('et', 'Другое')
-    )
     name = models.CharField('Название сервиса', max_length=2, choices=SERVICE_NAMES)
     logo = models.TextField('Ссылка на лого')
     type = models.CharField('Тип сервиса', max_length=2, choices=SERVICE_TYPES)
