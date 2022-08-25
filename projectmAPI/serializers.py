@@ -1,10 +1,8 @@
 from rest_framework import serializers
+from CustomUser.models import *
 
+class test(serializers.ModelSerializer):
 
-class UserMSerializer(serializers.Serializer):
-    #nickname = serializers.CharField(max_length=50)
-    #country = serializers.CharField(max_length=40)
-    #city = serializers.CharField(max_length=40)
-    #photo = serializers.CharField()
-    #user_contact = serializers.IntegerField()
-    service_info = serializers.CharField()
+    class Meta:
+        model = UserM
+        fields = '__all__'
