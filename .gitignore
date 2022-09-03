@@ -132,5 +132,5 @@ dmypy.json
 #etc
 game_return_scheme.json
 ProjectM.code-workspace
-migrations/
 docker-compose.yaml
+000[2-9]*.py
