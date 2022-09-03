@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class CustomuserConfig(AppConfig):
+class ProjectmapiConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'CustomUser'
+    name = 'apps.projectmAPI'
