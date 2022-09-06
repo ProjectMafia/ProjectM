@@ -18,6 +18,7 @@ from django.urls import path, include, re_path
 from apps.projectmAPI.views import *
 urlpatterns = [
     path('api/v1/users/', UsersListView.as_view()),
+    path('api/v1/users/exists', IsUserExistsView.as_view()),
     #path('api/v1/users/add', UserAddView.as_view()),
     path('api/v1/users/<int:uid>/', UserInfoView.as_view()),
     path('api/v1/users/<int:uid>/clubs/', UserClubsView.as_view()),

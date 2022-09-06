@@ -70,7 +70,11 @@ class GameStatSerializer(serializers.Serializer):
     players = serializers.ListField()
     roles = serializers.ListField()
 
+class GameAddSerializer(serializers.Serializer):
 
+    def create(self, validated_data):
+        
+        return super().create(validated_data)
 
 
 

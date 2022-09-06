@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+from os import stat
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -12,6 +14,20 @@ from .validators import *
 class UsersListView(ListAPIView):
     queryset = UserM.objects.all()
     serializer_class = UsersSerializer
+
+class IsUserExistsView(APIView):
+
+    def post(self, request):
+        try:
+            query = UserM.objects.get(pk=request.data['uid'])
+        except:
+            try:
+                query = UserM.objects.get(nickname=request.data['nickname'])
+            except:
+                return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = UsersSerializer(query)
+        output_data = serializer.data
+        return Response(output_data)
 
 
 class UserInfoView(APIView):
