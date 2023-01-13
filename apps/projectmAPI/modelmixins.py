@@ -2,7 +2,7 @@ from django.db import models
 
 
 class BaseStructModel(models.Model):
-    is_delete = models.BooleanField('Удален ли аккаунт', default=False)
+    is_delete = models.BooleanField('Удалена ли запись', default=False)
     class Meta:
         abstract = True
 

@@ -40,6 +40,11 @@ class ClubsSerializer(serializers.ModelSerializer):
 class ClubUsersListSerializer(serializers.Serializer):
     userm_id = serializers.CharField()
     nickname = serializers.CharField(source='userm__nickname')
+
+
+class ClubUsersScoreboardListSerializer(serializers.Serializer):
+    userm_id = serializers.CharField()
+    nickname = serializers.CharField(source='userm__nickname')
     points_total = serializers.FloatField()
 
 

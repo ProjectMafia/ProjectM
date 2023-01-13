@@ -3,7 +3,8 @@ from django.db import models
 from .modelmixins import *
 from apps.CustomUser.models import UserM
 
-class Club(BaseStructModel, TimeStampMixin, AddressMixin, DescriptionMixin):
+class Club(BaseStructModel, TimeStampMixin, 
+           AddressMixin, DescriptionMixin):
     """Таблица клубов"""
     title = models.CharField('Название клуба', max_length=60, unique=True)
     

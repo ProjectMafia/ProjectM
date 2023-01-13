@@ -1,5 +1,4 @@
-from dataclasses import dataclass
-from os import stat
+import json
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -10,6 +9,8 @@ from rest_framework.response import Response
 from .queries import *
 from .shapers import *
 from .validators import *
+
+
 
 class UsersListView(ListAPIView):
     queryset = UserM.objects.all()
@@ -39,14 +40,45 @@ class UserInfoView(APIView):
         return Response(output_data)
 
 
+class UserSelfInfoView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        query = request.user
+        serializer = UsersSerializer(query)
+        output_data = serializer.data
+        return Response(output_data)
+
+
 class UserClubsView(ListAPIView):
 
     serializer_class = UserClubsListSerializer
     
     def get_queryset(self):
         uid = self.kwargs['uid']
-        queryset =  ClubUser.objects.all().filter(userm=uid)
+        if not hasattr(self, 'roles'):
+            self.roles = ['Member', 'Judge', 'Vice-President', 'President']
+        print(self.roles)
+        queryset =  ClubUser.objects.all().filter(userm=uid, role_in_club__in=self.roles)
         return queryset
+    
+    def post(self, request, *args, **kwargs):
+        #try:
+        if 'role_in_club' in request.data:
+            self.roles = [request.data['role_in_club'],]
+            return self.list(request, *args, **kwargs)
+        elif 'roles_in_club' in request.data:
+            self.roles = request.data['roles_in_club'] 
+            if isinstance(self.roles, str):
+                self.roles = json.loads(self.roles)
+            if isinstance(self.roles, list):
+                return self.list(request, *args, **kwargs)
+            return Response({'error': 'roles_in_club must be an array'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'error': 'role_in_club field required'}, status=status.HTTP_400_BAD_REQUEST)
+        #except:
+        #    return Response({'error': 'check request'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class UserInClubStatView(APIView):
@@ -85,10 +117,17 @@ class ClubsListView(ListAPIView):
     serializer_class = ClubsSerializer
 
 
-class ClubAddView(CreateAPIView):
+class ClubAddView(APIView):
     permission_classes = [IsAuthenticated]
-    queryset = Club.objects.all()
-    serializer_class = ClubsSerializer
+    from rest_framework.request import Request
+    
+    def post(self, request: Request):
+        club_data = request.data
+        if not ClubAddValidation(club_data).is_valid:
+            return Response({'error': 'Check your fields'}, status=status.HTTP_400_BAD_REQUEST)
+        query = ClubAddQuey(request).query
+        output_data = ClubsSerializer(query).data
+        return Response(output_data)
 
 
 class AddUserToClubView(CreateAPIView):
@@ -115,6 +154,17 @@ class ClubUsersListView(ListAPIView):
         return queryset
 
 
+class ClubUsersScoreboardListView(ListAPIView):
+    serializer_class = ClubUsersScoreboardListSerializer
+    def get_queryset(self):
+        cid = self.kwargs['cid']
+        queryset = GameUser.objects.all().filter(game__club=cid)\
+            .values('userm_id', 'userm__nickname')\
+            .annotate(points_total=Coalesce(Sum('points'), 0.0))
+        return queryset
+    
+
+
 class ClubGamesView(ListAPIView):
     serializer_class = GamesSerializer
 
@@ -139,10 +189,11 @@ class GameStatView(APIView):
         return Response(output_data)
 
 class GameAddView(APIView):
-
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         game_description = request.data
         value = GameAddValidator(game_description.copy()).is_valid
+        
 
         if not value:
             return Response('Ошибка формы, проверьте поля и checksum', status=status.HTTP_400_BAD_REQUEST)

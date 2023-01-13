@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 class UserM(AbstractUser, BaseStructModel, AddressMixin, DescriptionMixin):
-    nickname = models.CharField('Ник', max_length=50, unique=True)
+    nickname = models.CharField('Игровой ник', max_length=50, unique=True)
     #objects = UserMManager
     REQUIRED_FIELDS = ['nickname']
     def __str__(self) -> str:

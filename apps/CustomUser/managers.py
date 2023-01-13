@@ -22,7 +22,7 @@ class UserMManager(BaseUserManager):
         kwargs.setdefault('is_superuser', True)
         kwargs.setdefault('is_active', True)
         if kwargs.get('is_staff') is not True:
-            raise ValueError(_('Superuser must have is_staff=True.'))
+            raise ValueError(('Superuser must have is_staff=True.', ))
         if kwargs.get('is_superuser') is not True:
-            raise ValueError(_('Superuser must have is_superuser=True.'))
+            raise ValueError(('Superuser must have is_superuser=True.', ))
         return self.create_user(username, nickname, password, **kwargs)

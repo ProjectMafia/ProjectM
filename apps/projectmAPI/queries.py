@@ -1,6 +1,6 @@
 from datetime import datetime, date
 from .models import *
-from django.db.models import Count, Q, Avg, Sum, When, Case, Value
+from django.db.models import Count, Q, Avg, Sum, When, Case, Value, F
 from django.db.models.lookups import LessThanOrEqual
 from django.db.models.functions import Coalesce, Concat
 from django.contrib.postgres.aggregates import ArrayAgg
@@ -59,11 +59,31 @@ class UserInClybStatQuery:
 
 class ClubUsersListQuery:
     def __init__(self, cid):
-        self.query = GameUser.objects.all().filter(game__club=cid)\
-            .values('userm_id', 'userm__nickname')\
-            .annotate(points_total=Coalesce(Sum('points'), 0.0))
 
-                    
+       #self.query = ClubUser.objects.all().filter(club=cid)\
+       #    .values('userm_id', 'userm__nickname')\
+       #    .annotate(
+       #        points_total=Sum(GameUser.objects.all().filter(game__club=cid)\
+       #        .annotate(points_total=Coalesce(Sum('points'), 0.0)))
+       #    )
+       #print(self.query)
+        self.query = ClubUser.objects.all().filter(club=cid)\
+            .values('userm_id', 'userm__nickname')
+
+        #memory = {}
+        #for i, user in enumerate(self.query):
+        #    if user['userm_id'] in memory:
+        #        if self.query[i]['points_total'] == 0:
+        #            self.query[i]
+        #        else:
+        #            self.query[memory[user['userm_id']]] = 0
+        #    memory[user['userm_id']] = i
+        #self.query = GameUser.objects.all().filter(game__club=cid)\
+        #    .values('userm_id', 'userm__nickname')\
+        #    .annotate(points_total=Coalesce(Sum('points'), 0.0)).union(ClubUser.objects.all().filter(club=cid)\
+        #    .values('userm_id', 'userm__nickname')\
+        #    .annotate(points_total=Value(0)))
+
 class GameStatQuery:
 
     def __init__(self, gid) -> None:
@@ -122,6 +142,20 @@ class GameAddQuery:
         ]
 
         self.query = GameUser.objects.bulk_create(users)
+
+class ClubAddQuey:
+    
+    def __init__(self, request) -> None:
+        self._data = request.data
+        self._user = request.user
+        
+        
+    @property
+    def query(self):
+        self.club_query = Club.objects.create(**self._data)
+        self.user_club_query = ClubUser.objects.create(club=self.club_query, userm=self._user, role_in_club='President')
+        return self.club_query
+
 
         
 
